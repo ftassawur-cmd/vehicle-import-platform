@@ -1,0 +1,10 @@
+{
+  "name": "JSL Imports",
+  "short_name": "JSL",
+  "description": "Japan → Sri Lanka vehicle landed-cost calculator with a fully itemised duty waterfall.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#05070F",
+  "theme_color": "#05070F",
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

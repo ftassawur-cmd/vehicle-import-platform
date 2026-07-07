@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>JSL Imports — Japan → Sri Lanka landed-cost calculator</title>
+    <meta name="description" content="Price any Japan-auction vehicle to your Colombo doorstep. Every duty line itemised and sourced to its gazette — CIF, CID, surcharges, excise, luxury tax, SSCL, VAT — with LC-date what-ifs. Estimates with receipts." />
+    <link rel="canonical" href="https://jslimports.lk/" />
+    <meta name="robots" content="index,follow" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#05070F" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F6F7FD" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="JSL Imports" />
+    <meta property="og:title" content="Know the on-road cost before you bid" />
+    <meta property="og:description" content="Japan → Sri Lanka vehicle import costs, itemised to the rupee. Every line traced to a gazette; every estimate flagged." />
+    <meta property="og:url" content="https://jslimports.lk/" />
+    <meta property="og:image" content="https://jslimports.lk/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="JSL Imports — know the on-road cost before you bid" />
+    <meta name="twitter:description" content="Japan → Sri Lanka landed costs with a fully-itemised duty waterfall and LC-date what-ifs." />
+    <meta name="twitter:image" content="https://jslimports.lk/og.png" />
+
+    <script>try{var t=localStorage.getItem("jsl-theme");if(t==="light"||(t!=="dark"&&matchMedia("(prefers-color-scheme: light)").matches))document.documentElement.dataset.theme="light"}catch(e){}</script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "SoftwareApplication",
+          "name": "JSL Imports",
+          "applicationCategory": "FinanceApplication",
+          "operatingSystem": "Web",
+          "description": "Landed-cost calculator for importing vehicles from Japan to Sri Lanka. Itemises CIF, customs duty, surcharges, excise, luxury tax, SSCL and VAT with dated rule-set provenance.",
+          "url": "https://jslimports.lk/",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "LKR" }
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Are these figures official?",
+              "acceptedAnswer": { "@type": "Answer", "text": "No. Results are estimates built from gazettes, the Customs tariff guide and reported schedules. Every line carries a confidence badge and a source reference, and anything unverified is flagged amber. Confirm with a licensed Customs House Agent before committing funds." }
+            },
+            {
+              "@type": "Question",
+              "name": "Why does the LC opening date change the total?",
+              "acceptedAnswer": { "@type": "Answer", "text": "The temporary 50% surcharge (Gazette 2488/56, in force 16 May – 15 Aug 2026) exempts vehicles whose letter of credit was opened on or before 15 May 2026. The calculator applies or removes it from your LC date and shows the difference." }
+            },
+            {
+              "@type": "Question",
+              "name": "How old a vehicle can I import?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Age limits are set per vehicle class by the Imports & Exports (Control) Regulations No. 01 of 2025 — for example 3 years for cars and SUVs, 5 for vans, measured from first registration to the bill-of-lading date. The calculator blocks ineligible builds and tells you why." }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,198 @@
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────────────────────
+   JSL Imports design tokens · Phase 7
+   Direction (locked by ADR/mockup): deep-space navy, glass panels,
+   a single indigo accent. Signature: the live duty-waterfall ledger.
+   Type: Bricolage Grotesque (display) · Inter (body) · IBM Plex Mono (figures)
+   ───────────────────────────────────────────────────────────── */
+
+:root {
+  --bg: #05070f;
+  --bg-deep: #03040a;
+  --surface: #0a0f1e;
+  --card: #0d1428;
+  --line: rgba(148, 163, 255, 0.16);
+  --line-soft: rgba(148, 163, 255, 0.08);
+  --ink: #e9edff;
+  --mute: #9aa3c7;
+  --faint: #6b7499;
+  --accent: #7c89ff;
+  --accent-deep: #4053e9;
+  --accent-ink: #0a0f1e;
+  --glow: rgba(124, 137, 255, 0.32);
+  --ok: #3adfa5;
+  --rep: #6fb4ff;
+  --est: #ffb65c;
+  --low: #ff7a7a;
+  --glass-top: rgba(148, 163, 255, 0.08);
+  --glass-bottom: rgba(148, 163, 255, 0.02);
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  --bg: #f6f7fc;
+  --bg-deep: #edeff8;
+  --surface: #ffffff;
+  --card: #ffffff;
+  --line: rgba(30, 41, 99, 0.16);
+  --line-soft: rgba(30, 41, 99, 0.08);
+  --ink: #141a3c;
+  --mute: #4e578a;
+  --faint: #8189b3;
+  --accent: #4353e0;
+  --accent-deep: #2e3bb8;
+  --accent-ink: #ffffff;
+  --glow: rgba(67, 83, 224, 0.22);
+  --ok: #0b8a5c;
+  --rep: #1d6fd1;
+  --est: #a95c02;
+  --low: #c43d3d;
+  --glass-top: rgba(255, 255, 255, 0.72);
+  --glass-bottom: rgba(255, 255, 255, 0.45);
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-deep: var(--bg-deep);
+  --color-surface: var(--surface);
+  --color-card: var(--card);
+  --color-line: var(--line);
+  --color-line-soft: var(--line-soft);
+  --color-ink: var(--ink);
+  --color-mute: var(--mute);
+  --color-faint: var(--faint);
+  --color-accent: var(--accent);
+  --color-accent-deep: var(--accent-deep);
+  --color-accent-ink: var(--accent-ink);
+  --color-ok: var(--ok);
+  --color-rep: var(--rep);
+  --color-est: var(--est);
+  --color-low: var(--low);
+}
+
+@theme {
+  --font-display: "Bricolage Grotesque Variable", "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --animate-dash-flow: dash-flow 3.2s linear infinite;
+  --animate-float-y: float-y 7s ease-in-out infinite;
+}
+
+@keyframes dash-flow {
+  to { stroke-dashoffset: -24; }
+}
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* ── Base ── */
+html { scroll-behavior: smooth; }
+body {
+  @apply bg-bg text-ink font-sans antialiased;
+  font-feature-settings: "cv02", "cv03", "cv11";
+}
+::selection { background: var(--accent); color: var(--accent-ink); }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+h1, h2, h3 { text-wrap: balance; }
+p { text-wrap: pretty; }
+
+/* ── Composed pieces ── */
+.glass {
+  background: linear-gradient(180deg, var(--glass-top), var(--glass-bottom));
+  border: 1px solid var(--line);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.eyebrow {
+  @apply font-mono text-[11px] font-medium uppercase text-mute;
+  letter-spacing: 0.18em;
+}
+
+.btn-primary,
+.btn-ghost {
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[15px] font-medium
+         transition-[transform,box-shadow,background-color,border-color] duration-200
+         active:scale-[0.98];
+}
+.btn-primary {
+  @apply bg-accent text-accent-ink;
+  background-image: linear-gradient(135deg, var(--accent), var(--accent-deep));
+  box-shadow: 0 8px 28px -8px var(--glow), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+.btn-primary:hover { box-shadow: 0 12px 36px -8px var(--glow), inset 0 1px 0 rgba(255, 255, 255, 0.28); transform: translateY(-1px); }
+.btn-ghost {
+  @apply border border-line bg-transparent text-ink hover:border-accent/60 hover:bg-accent/5;
+}
+
+.input {
+  @apply w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-[15px] text-ink
+         placeholder:text-faint transition-colors duration-150
+         focus:border-accent focus:outline-none;
+}
+[data-theme="light"] .input { background: #fbfbfe; }
+.input:focus { box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent); }
+select.input { appearance: none; }
+
+.label { @apply mb-1.5 block text-[13px] font-medium text-mute; }
+
+.num { @apply font-mono tabular-nums; }
+
+/* Ledger — the signature element */
+.ledger-row {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr) auto;
+  column-gap: 12px;
+  align-items: baseline;
+}
+@media (min-width: 640px) {
+  .ledger-row { grid-template-columns: 14px minmax(0, 1.05fr) minmax(0, 1fr) auto; }
+}
+
+.divider-x { height: 1px; background: linear-gradient(90deg, transparent, var(--line), transparent); }
+
+/* Subtle grid backdrop for section breaks */
+.bg-grid {
+  background-image:
+    linear-gradient(var(--line-soft) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 30%, transparent 75%);
+}
+
+/* ── Motion safety ── */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Print: the paper quote ── */
+@media print {
+  :root {
+    --bg: #ffffff; --bg-deep: #ffffff; --surface: #ffffff; --card: #ffffff;
+    --line: #c9cede; --line-soft: #e2e5f0;
+    --ink: #10163a; --mute: #444d7a; --faint: #6d76a3;
+    --accent: #2e3bb8; --accent-deep: #2e3bb8; --accent-ink: #ffffff;
+    --ok: #0b8a5c; --rep: #1d6fd1; --est: #a95c02; --low: #c43d3d;
+    --glass-top: #ffffff; --glass-bottom: #ffffff;
+  }
+  body { background: #fff !important; }
+  [data-noprint] { display: none !important; }
+  .glass { backdrop-filter: none; border-color: var(--line-soft); }
+  main { padding: 0 !important; }
+  a { text-decoration: none; color: inherit; }
+  @page { margin: 14mm; }
+}

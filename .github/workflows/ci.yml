@@ -1,0 +1,89 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: |
+            packages/calc-engine/package-lock.json
+            apps/web/package-lock.json
+
+      # ── Engine: golden figures + browser-path parity ──
+      - run: npm --prefix packages/calc-engine ci --no-audit --no-fund
+      - run: npm --prefix packages/calc-engine run typecheck
+      - run: npm --prefix packages/calc-engine test
+
+      # ── Web: types, SSR smoke, production build ──
+      - run: npm --prefix apps/web ci --no-audit --no-fund
+      - run: npm --prefix apps/web run typecheck
+      - run: npm --prefix apps/web run smoke
+      - run: npm --prefix apps/web run build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web-dist
+          path: apps/web/dist
+          retention-days: 7
+
+  api:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: jsl
+          POSTGRES_PASSWORD: jsl
+          POSTGRES_DB: jsl_imports
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U jsl -d jsl_imports"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 12
+    env:
+      DATABASE_URL: postgresql://jsl:jsl@localhost:5432/jsl_imports
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: |
+            packages/calc-engine/package-lock.json
+            apps/api/package-lock.json
+
+      # Engine is a runtime dependency of the api (file:../../packages/calc-engine)
+      - run: npm --prefix packages/calc-engine ci --no-audit --no-fund
+      - run: npm --prefix packages/calc-engine run build
+
+      - run: npm --prefix apps/api ci --no-audit --no-fund
+      - run: npm --prefix apps/api run prisma:generate
+
+      # Committed SQL applies cleanly…
+      - run: npm --prefix apps/api run db:migrate:deploy
+      # …and matches the schema exactly (drift gate for the hand-authored init
+      # migration; see CHANGELOG 0.3.0):
+      - name: Migration drift check
+        run: >-
+          npx prisma migrate diff
+          --config ../../prisma.config.ts
+          --from-migrations ../../prisma/migrations
+          --to-schema-datamodel ../../prisma/schema.prisma
+          --shadow-database-url "$DATABASE_URL"
+          --exit-code
+        working-directory: apps/api
+
+      - run: npm --prefix apps/api run db:seed
+      - run: npm --prefix apps/api run typecheck
+      - run: npm --prefix apps/api run build
+      - run: npm --prefix apps/api run e2e

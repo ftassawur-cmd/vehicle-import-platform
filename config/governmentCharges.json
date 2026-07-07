@@ -1,0 +1,8 @@
+{
+  "_meta": { "domain": "GOVERNMENT_CHARGES", "version": "2026.07.03-r1", "currency": "LKR", "confidence": "estimate", "notes": "Statutory-adjacent processing charges outside the duty stack. Verify against Customs/SLPA schedules (Q11)." },
+  "items": [
+    { "id": "cusdecProcessing", "label": "CUSDEC / customs documentation", "amount": 9000, "overridable": true },
+    { "id": "examinationFee", "label": "Customs examination / MV unit", "amount": 4500, "overridable": true },
+    { "id": "miscStatutory", "label": "Sundry statutory charges", "amount": 3500, "overridable": true }
+  ]
+}

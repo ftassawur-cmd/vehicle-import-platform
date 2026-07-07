@@ -1,0 +1,9 @@
+{
+  "_meta": { "domain": "INSURANCE", "version": "2026.07.03-r1", "confidence": "estimate" },
+  "marine": {
+    "defaultRatePctOfFobPlusFreight": 1.0,
+    "minimumJpy": 15000,
+    "certificateRequiredAtClearance": true,
+    "customsNotionalPctIfNoCertificate": { "value": 1.0, "confidence": "estimate", "notes": "Verify current notional uplift (Q7)" }
+  }
+}

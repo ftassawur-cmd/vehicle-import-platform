@@ -1,0 +1,26 @@
+{
+  "name": "vehicle-import-platform",
+  "private": true,
+  "version": "0.1.0",
+  "description": "JSL Imports \u2014 the definitive Japan\u2192Sri Lanka vehicle import platform",
+  "scripts": {
+    "dev": "npm --prefix apps/web run dev",
+    "build": "npm --prefix apps/web run build",
+    "preview": "npm --prefix apps/web run preview",
+    "smoke": "npm --prefix apps/web run smoke",
+    "demo": "npm --prefix packages/calc-engine run demo",
+    "test": "npm --prefix packages/calc-engine test",
+    "typecheck": "npm --prefix packages/calc-engine run typecheck && npm --prefix apps/web run typecheck",
+    "verify": "npm run typecheck && npm test && npm run smoke && npm run build",
+    "api:dev": "npm --prefix apps/api run dev",
+    "api:build": "npm --prefix apps/api run build",
+    "api:typecheck": "npm --prefix apps/api run typecheck",
+    "api:e2e": "npm --prefix apps/api run e2e",
+    "api:seed": "npm --prefix apps/api run db:seed",
+    "db:migrate": "npm --prefix apps/api run db:migrate:deploy",
+    "verify:full": "npm run verify && npm run api:typecheck && npm run api:build && npm run api:e2e"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

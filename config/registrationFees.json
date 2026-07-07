@@ -1,0 +1,13 @@
+{
+  "_meta": { "domain": "REGISTRATION", "version": "2026.07.03-r1", "currency": "LKR", "confidence": "estimate", "notes": "DMT schedule to be verified (Q8). All figures editable in Admin Panel." },
+  "firstRegistration": { "car": 15000, "vanDualPurpose": 15000, "pickup": 15000, "motorcycle": 4000, "busSmall": 18000 },
+  "numberPlates": { "standardPair": 4600, "premiumOptional": 0 },
+  "revenueLicenceYear1": {
+    "petrol": [ { "maxCc": 1000, "amount": 4500 }, { "maxCc": 1600, "amount": 6500 }, { "maxCc": 2000, "amount": 9000 }, { "maxCc": null, "amount": 13500 } ],
+    "diesel": [ { "maxCc": 2000, "amount": 15000 }, { "maxCc": null, "amount": 21000 } ],
+    "hybridDiscountPct": 0,
+    "ev": [ { "maxKw": null, "amount": 6000 } ]
+  },
+  "emissionTestYear1Exempt": true,
+  "optionalAgentFee": 10000
+}

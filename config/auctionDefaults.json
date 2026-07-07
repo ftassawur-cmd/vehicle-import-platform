@@ -1,0 +1,13 @@
+{
+  "_meta": { "domain": "AUCTION_DEFAULTS", "version": "2026.07.03-r1", "currency": "JPY", "confidence": "estimate", "notes": "Japan-side Smart Assistance seeds; commercial practice ranges, all overridable." },
+  "auctionFee": { "default": 22000, "range": [16500, 33000] },
+  "exporterServiceFee": { "default": 88000, "range": [55000, 110000] },
+  "inlandTransport": { "default": 25000, "range": [10000, 40000], "byRegionHint": { "kanto": 20000, "chubu": 22000, "kansai": 25000, "kyushu": 35000 } },
+  "exportCertificateDeregistration": { "default": 10000 },
+  "jaaiInspection": { "default": 22000, "range": [15000, 30000], "mandatoryForLK": true },
+  "radiationCertificate": { "default": 10000, "portDependent": true },
+  "cleaning": { "default": 8000 },
+  "documentationCourier": { "default": 8000 },
+  "jpPortAndLoading": { "default": 30000, "range": [20000, 45000] },
+  "auctionGradeHints": { "recommendedForLK": "4 to 4.5", "notes": "Grades <=3.5 raise reconditioning risk; R/RA frames flagged" }
+}

@@ -1,0 +1,20 @@
+{
+  "_meta": { "domain": "PORT_CHARGES", "version": "2026.07.03-r1", "currency": "LKR", "confidence": "estimate", "notes": "Colombo-side handling. Verify SLPA tariff (Q11)." },
+  "destinationPort": "LKCMB",
+  "byMethod": {
+    "roro": [
+      { "id": "portHandling", "label": "SLPA handling & wharfage", "amount": 60000 },
+      { "id": "portStorageBuffer", "label": "Storage buffer (5 free days assumed)", "amount": 0 }
+    ],
+    "container": [
+      { "id": "thcDestination", "label": "Terminal handling (per car share, 40ft x2)", "amount": 48000 },
+      { "id": "unstuffing", "label": "Devanning / unstuffing", "amount": 22000 }
+    ]
+  },
+  "common": [
+    { "id": "clearingAgent", "label": "Clearing agent (CHA) fee", "amount": 40000 },
+    { "id": "localTransport", "label": "Port -> yard transport", "amount": 18000 },
+    { "id": "demurrageContingency", "label": "Demurrage contingency", "amount": 0, "enabledByDefault": false }
+  ],
+  "bankCharges": { "lcPctOfRemitted": 0.4, "fixedLkr": 7500, "confidence": "estimate" }
+}

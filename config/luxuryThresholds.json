@@ -1,0 +1,32 @@
+{
+  "_meta": {
+    "domain": "LUXURY_TAX",
+    "version": "2026.07.03-r1",
+    "basisGazette": "2421/41 (31 Jan 2025)",
+    "sources": ["EconomyNext 31 Jan 2025", "WealthyIslander 29 May 2026", "Customs Tariff Guide 2025 Ch.87 columns"],
+    "confidence": "verified-secondary",
+    "notes": "Applies only to the CIF portion above the threshold. Valuation-base nuance pending Q10."
+  },
+  "base": "cif",
+  "thresholdsLkr": {
+    "petrol": 5000000,
+    "diesel": 5000000,
+    "petrolHybrid": 5500000,
+    "dieselHybrid": 5500000,
+    "petrolPhev": 5500000,
+    "dieselPhev": 5500000,
+    "ev": 6000000,
+    "esmart": 6000000
+  },
+  "ratePctOnExcess": {
+    "petrol": 100,
+    "diesel": 120,
+    "petrolHybrid": 80,
+    "dieselHybrid": 90,
+    "petrolPhev": 80,
+    "dieselPhev": 90,
+    "ev": 60,
+    "esmart": 60
+  },
+  "exemptVehicleClasses": ["ambulance", "hearse", "goKart", "specialPurpose", "electricGolfCar"]
+}

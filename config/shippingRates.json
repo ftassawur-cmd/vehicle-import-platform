@@ -1,0 +1,29 @@
+{
+  "_meta": { "domain": "SHIPPING", "version": "2026.07.03-r1", "confidence": "estimate", "notes": "2026 rates elevated by Middle-East fuel costs (BAF 0-30%). Volume-billed: car ~8-10 m3, SUV 12-15 m3. Sources: exporter tariff guides, ODS Orient 2026, KMC Japan schedules." },
+  "originPorts": [
+    { "code": "JPYOK", "name": "Yokohama", "popular": true },
+    { "code": "JPNGO", "name": "Nagoya", "popular": true },
+    { "code": "JPUKB", "name": "Kobe", "popular": true },
+    { "code": "JPOSA", "name": "Osaka" },
+    { "code": "JPTYO", "name": "Tokyo" },
+    { "code": "JPSMZ", "name": "Shimizu" },
+    { "code": "JPHKT", "name": "Hakata" },
+    { "code": "JPKWS", "name": "Kawasaki" }
+  ],
+  "destinationPort": { "code": "LKCMB", "name": "Colombo" },
+  "methods": {
+    "roro": {
+      "currency": "USD",
+      "byBodyClass": { "car": 1500, "suv": 1850, "vanDualPurpose": 1700, "pickup": 1800 },
+      "transitDaysRange": [14, 21],
+      "bafNote": "Bunker adjustment 0-30% already reflected in defaults; override per booking."
+    },
+    "container": {
+      "currency": "USD",
+      "perCarShared40ft": 1100,
+      "dedicated20ft": 2300,
+      "transitDaysRange": [16, 24]
+    }
+  },
+  "insuranceRef": "config/insuranceRules.json"
+}

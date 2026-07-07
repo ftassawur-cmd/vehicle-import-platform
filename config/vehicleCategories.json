@@ -1,0 +1,29 @@
+{
+  "_meta": {
+    "domain": "VEHICLE_CATEGORIES",
+    "version": "2026.07.03-r1",
+    "basisGazette": "2421/04 (27 Jan 2025) Imports & Exports (Control) Regulations No.01 of 2025",
+    "confidence": "reported",
+    "notes": "Age = first registration -> Bill of Lading date. One source reports 2y for cars vs 3y majority (Q6). RHD only; JAAI certificate mandatory for used JP vehicles."
+  },
+  "steering": { "allowed": "RHD", "lhdRequiresTransportMinistryApproval": true },
+  "individualImporterLimit": { "vehiclesPer12Months": 1, "registeredImportersUnlimited": true },
+  "preShipmentInspection": { "required": true, "authority": "JAAI", "confidence": "verified-secondary" },
+  "classes": [
+    { "id": "car", "label": "Motor Car / SUV", "hsHeading": "87.03", "maxImportAgeYears": 3, "confidence": "reported" },
+    { "id": "vanDualPurpose", "label": "Van / Dual-purpose", "hsHeading": "87.02/87.03", "maxImportAgeYears": 5, "confidence": "reported" },
+    { "id": "pickup", "label": "Pickup / Single & Double Cab", "hsHeading": "87.04", "maxImportAgeYears": 4, "confidence": "reported" },
+    { "id": "lorrySub5MT", "label": "Lorry / Reefer < 5MT GVW", "hsHeading": "87.04", "maxImportAgeYears": 4, "confidence": "reported" },
+    { "id": "busSmall", "label": "Bus 10-12 pax", "hsHeading": "87.02", "maxImportAgeYears": 3, "confidence": "reported" },
+    { "id": "busLarge", "label": "Bus 13+ pax / commercial passenger", "hsHeading": "87.02", "maxImportAgeYears": 5, "confidence": "reported" },
+    { "id": "motorcycle", "label": "Motorcycle", "hsHeading": "87.11", "maxImportAgeYears": 3, "confidence": "reported" },
+    { "id": "specialPurpose", "label": "Special purpose / defence", "hsHeading": "87.05", "maxImportAgeYears": 10, "confidence": "reported" },
+    { "id": "ambulance", "label": "Ambulance", "hsHeading": "8703", "maxImportAgeYears": 3, "confidence": "estimate" },
+    { "id": "hearse", "label": "Hearse", "hsHeading": "8703", "maxImportAgeYears": 3, "confidence": "estimate" }
+  ],
+  "complianceNotes2026": {
+    "firstRegistrationSafetyFloor": { "airbagsMin": 2, "abs": true, "esc": true, "confidence": "low", "sourceNote": "single blog source; verify with DMT (Q12)" },
+    "threeWheelers": "petrol/diesel three-wheeler imports prohibited; electric permitted",
+    "emissions": "policy direction Euro 6"
+  }
+}

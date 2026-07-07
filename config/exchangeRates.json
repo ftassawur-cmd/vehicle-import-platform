@@ -1,0 +1,15 @@
+{
+  "_meta": {
+    "domain": "EXCHANGE_RATES",
+    "version": "2026.07.03-r1",
+    "notes": "Seed values only. Production ingests Customs weekly rates + market feed; engine warns when stale.",
+    "staleAfterHours": 168
+  },
+  "rates": [
+    { "pair": "USD/LKR", "rate": 309.40, "asOf": "2026-02-24", "source": "EconomyNext spot report", "confidence": "reported", "stale": true },
+    { "pair": "JPY/LKR", "rate": 1.95, "asOf": "2026-07-01", "source": "derived estimate (USD cross)", "confidence": "estimate", "stale": false },
+    { "pair": "EUR/LKR", "rate": 336.00, "asOf": "2026-07-01", "source": "estimate", "confidence": "estimate", "stale": false },
+    { "pair": "GBP/LKR", "rate": 392.00, "asOf": "2026-07-01", "source": "estimate", "confidence": "estimate", "stale": false }
+  ],
+  "customsRatePolicy": "Sri Lanka Customs publishes its own weekly assessment rates; production must ingest that feed (Q7)."
+}

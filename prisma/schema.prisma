@@ -1,0 +1,408 @@
+// JSL Vehicle Import Platform — Prisma schema v1 (Phase 3)
+// PostgreSQL. Conventions: cuid ids, soft business keys unique, JSONB for rule payloads
+// and calculation snapshots (schema-validated by calc-engine before write).
+
+generator client {
+  // Prisma 7 Rust-free client (WASM query compiler + driver adapter).
+  // No engine binaries to download; runtime uses @prisma/adapter-pg over `pg`.
+  // CJS output for the NestJS toolchain. Generated code is gitignored.
+  provider     = "prisma-client"
+  output       = "../apps/api/src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+  // Prisma 7: the connection URL lives in prisma.config.ts (Migrate) and in
+  // the PrismaPg driver adapter passed to PrismaClient (runtime).
+}
+
+// ─────────────────────────── Identity, orgs, RBAC ───────────────────────────
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  DEALER
+  IMPORTER
+  VIEWER
+}
+
+enum AccountStatus {
+  PENDING_EMAIL
+  PENDING_APPROVAL
+  ACTIVE
+  SUSPENDED
+}
+
+model User {
+  id            String        @id @default(cuid())
+  email         String        @unique
+  passwordHash  String
+  fullName      String
+  phone         String?
+  status        AccountStatus @default(PENDING_EMAIL)
+  emailVerifiedAt DateTime?
+  approvedById  String?
+  approvedBy    User?         @relation("UserApprovals", fields: [approvedById], references: [id])
+  approvals     User[]        @relation("UserApprovals")
+  memberships   OrgMembership[]
+  sessions      Session[]
+  passwordResets PasswordResetToken[]
+  emailTokens   EmailVerificationToken[]
+  calculations  Calculation[]
+  quotations    Quotation[]
+  favorites     Favorite[]
+  comparisons   Comparison[]
+  auditLogs     AuditLog[]
+  notifications Notification[]
+  publishedRuleSets RuleSetVersion[] @relation("RulePublisher")
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([status])
+}
+
+model Organization {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  type        String   @default("importer") // importer | dealer | exporter | fleet | consultant
+  brandTheme  Json?    // Admin Panel branding overrides
+  memberships OrgMembership[]
+  customers   Customer[]
+  calculations Calculation[]
+  quotations  Quotation[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model OrgMembership {
+  id     String @id @default(cuid())
+  userId String
+  orgId  String
+  role   Role   @default(VIEWER)
+  user   User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  org    Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, orgId])
+  @@index([orgId, role])
+}
+
+model Session {
+  id               String   @id @default(cuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refreshTokenHash String   @unique
+  userAgent        String?
+  ip               String?
+  expiresAt        DateTime
+  revokedAt        DateTime?
+  createdAt        DateTime @default(now())
+
+  @@index([userId, expiresAt])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+}
+
+model EmailVerificationToken {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+}
+
+// ─────────────────────────── Vehicle catalog ───────────────────────────
+
+enum FuelType {
+  PETROL
+  DIESEL
+  PETROL_HYBRID
+  DIESEL_HYBRID
+  PETROL_PHEV
+  DIESEL_PHEV
+  EV
+  ESMART
+}
+
+enum VehicleClass {
+  CAR
+  VAN_DUAL_PURPOSE
+  PICKUP
+  LORRY_SUB_5MT
+  BUS_SMALL
+  BUS_LARGE
+  MOTORCYCLE
+  SPECIAL_PURPOSE
+  AMBULANCE
+  HEARSE
+}
+
+model VehicleMake {
+  id      String  @id @default(cuid())
+  name    String  @unique
+  country String  @default("JP")
+  logoUrl String?
+  active  Boolean @default(true)
+  models  VehicleModel[]
+}
+
+model VehicleModel {
+  id       String @id @default(cuid())
+  makeId   String
+  make     VehicleMake @relation(fields: [makeId], references: [id], onDelete: Cascade)
+  name     String
+  class    VehicleClass @default(CAR)
+  popular  Boolean @default(false)
+  variants VehicleVariant[]
+
+  @@unique([makeId, name])
+  @@index([class])
+}
+
+model VehicleVariant {
+  id           String   @id @default(cuid())
+  modelId      String
+  model        VehicleModel @relation(fields: [modelId], references: [id], onDelete: Cascade)
+  code         String        // e.g. ZVW51
+  yearFrom     Int
+  yearTo       Int?
+  fuelType     FuelType
+  engineCc     Int?          // null for EV
+  motorKw      Int?          // EV / hybrid assist
+  drivetrain   String?       // 2WD / 4WD / AWD
+  transmission String?
+  bodyType     String?
+  lengthMm     Int?
+  widthMm      Int?
+  heightMm     Int?
+  weightKg     Int?
+  fuelEconomyKmPerL Decimal? @db.Decimal(6, 2)
+  specSheet    Json?         // extensible spec payload (future manufacturer/VIN APIs)
+  images       VehicleImage[]
+  calculations Calculation[]
+  favorites    Favorite[]
+
+  @@unique([modelId, code, yearFrom])
+  @@index([fuelType, engineCc])
+}
+
+model VehicleImage {
+  id        String @id @default(cuid())
+  variantId String
+  variant   VehicleVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  url       String
+  kind      String @default("gallery") // hero | gallery | interior | three_sixty
+  sortOrder Int    @default(0)
+  source    String @default("seed")    // seed | upload | provider:<name>
+
+  @@index([variantId, kind, sortOrder])
+}
+
+// ─────────────────────────── Rules, FX, provenance ───────────────────────────
+
+enum ConfigDomain {
+  TAX_RULES
+  LUXURY_TAX
+  VEHICLE_CATEGORIES
+  EXCHANGE_RATES
+  SHIPPING
+  AUCTION_DEFAULTS
+  INSURANCE
+  PORT_CHARGES
+  GOVERNMENT_CHARGES
+  REGISTRATION
+}
+
+enum RuleSetStatus {
+  DRAFT
+  ACTIVE
+  RETIRED
+}
+
+model RuleSetVersion {
+  id            String        @id @default(cuid())
+  domain        ConfigDomain
+  version       String        // e.g. 2026.07.03-r1
+  status        RuleSetStatus @default(DRAFT)
+  payload       Json          // validated by calc-engine schema before persist
+  effectiveFrom DateTime
+  effectiveTo   DateTime?
+  changeNote    String?
+  sourceGazette String?       // number + archived PDF reference
+  publishedById String?
+  publishedBy   User?         @relation("RulePublisher", fields: [publishedById], references: [id])
+  calculations  Calculation[]
+  createdAt     DateTime      @default(now())
+
+  @@unique([domain, version])
+  @@index([domain, status, effectiveFrom])
+}
+
+model ExchangeRate {
+  id        String   @id @default(cuid())
+  pair      String   // "JPY/LKR"
+  rate      Decimal  @db.Decimal(14, 6)
+  asOf      DateTime
+  source    String   // customs_weekly | market | manual
+  createdAt DateTime @default(now())
+
+  @@unique([pair, asOf, source])
+  @@index([pair, asOf])
+}
+
+model Port {
+  id      String  @id @default(cuid())
+  code    String  @unique // JPYOK, LKCMB
+  name    String
+  country String
+  active  Boolean @default(true)
+}
+
+// ─────────────────────────── Calculations & commerce ───────────────────────────
+
+enum ShippingMethod {
+  RORO
+  CONTAINER
+}
+
+model Calculation {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  orgId           String?
+  org             Organization? @relation(fields: [orgId], references: [id])
+  variantId       String?
+  variant         VehicleVariant? @relation(fields: [variantId], references: [id])
+  title           String?
+  inputs          Json      // full CalcInputs (engine type)
+  resultSnapshot  Json      // full CalcResult incl. step trace, warnings, confidence
+  totalLandedLkr  Decimal   @db.Decimal(16, 2)
+  shippingMethod  ShippingMethod @default(RORO)
+  ruleSetVersionId String?         // primary TAX_RULES version used
+  ruleSetVersion  RuleSetVersion? @relation(fields: [ruleSetVersionId], references: [id])
+  ruleVersionsMap Json?           // {domain: versionId} for all domains consumed
+  pinned          Boolean  @default(false)
+  parentId        String?         // version-history chain
+  parent          Calculation?  @relation("CalcHistory", fields: [parentId], references: [id])
+  revisions       Calculation[] @relation("CalcHistory")
+  quotationItems  QuotationItem[]
+  createdAt       DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([orgId, createdAt])
+  @@index([pinned])
+}
+
+model Favorite {
+  id        String @id @default(cuid())
+  userId    String
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  variantId String
+  variant   VehicleVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, variantId])
+}
+
+model Comparison {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title          String?
+  calculationIds Json     // ordered array of Calculation ids
+  createdAt      DateTime @default(now())
+}
+
+model Customer {
+  id         String   @id @default(cuid())
+  orgId      String
+  org        Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  fullName   String
+  email      String?
+  phone      String?
+  nicOrBrn   String?  // NIC / business reg (quotation compliance fields)
+  notes      String?
+  quotations Quotation[]
+  createdAt  DateTime @default(now())
+
+  @@index([orgId, fullName])
+}
+
+enum QuotationStatus {
+  DRAFT
+  SENT
+  ACCEPTED
+  EXPIRED
+  CANCELLED
+}
+
+model Quotation {
+  id           String   @id @default(cuid())
+  orgId        String
+  org          Organization @relation(fields: [orgId], references: [id])
+  customerId   String?
+  customer     Customer? @relation(fields: [customerId], references: [id])
+  createdById  String
+  createdBy    User      @relation(fields: [createdById], references: [id])
+  reference    String    @unique // e.g. JSL-Q-2026-000142
+  status       QuotationStatus @default(DRAFT)
+  currency     String    @default("LKR")
+  marginModel  Json?     // profit-calculator settings applied
+  totalLkr     Decimal   @db.Decimal(16, 2)
+  validUntil   DateTime?
+  items        QuotationItem[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([orgId, status, createdAt])
+}
+
+model QuotationItem {
+  id            String @id @default(cuid())
+  quotationId   String
+  quotation     Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  calculationId String
+  calculation   Calculation @relation(fields: [calculationId], references: [id])
+  markupLkr     Decimal @db.Decimal(16, 2) @default(0)
+  lineTotalLkr  Decimal @db.Decimal(16, 2)
+  sortOrder     Int     @default(0)
+}
+
+// ─────────────────────────── Audit & notifications ───────────────────────────
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  action    String   // rules.publish | calc.create | quote.send | auth.login ...
+  entity    String?
+  entityId  String?
+  metadata  Json?
+  ip        String?
+  createdAt DateTime @default(now())
+
+  @@index([action, createdAt])
+  @@index([entity, entityId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind      String   // rule_change | fx_stale | approval | quote_viewed
+  title     String
+  body      String?
+  readAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([userId, readAt])
+}

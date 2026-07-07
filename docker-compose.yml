@@ -1,0 +1,56 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: jsl
+      POSTGRES_PASSWORD: jsl
+      POSTGRES_DB: jsl_imports
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jsl -d jsl_imports"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+    image: jsl-imports/api:latest
+    environment:
+      DATABASE_URL: postgresql://jsl:jsl@postgres:5432/jsl_imports
+      APP_URL: http://localhost:8080
+      PORT: "3000"
+      # Set real secrets via an env file or your orchestrator:
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-change-me}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-change-me}
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/v1/health | grep -q '\"db\":\"ok\"'"]
+      interval: 15s
+      timeout: 4s
+      retries: 5
+      start_period: 25s
+    restart: unless-stopped
+    # First run: docker compose exec api npm run db:seed
+
+  web:
+    build: .
+    image: jsl-imports/web:latest
+    ports:
+      - "8080:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  pgdata:

@@ -1,0 +1,184 @@
+{
+  "_meta": {
+    "domain": "TAX_RULES",
+    "version": "2026.07.03-r1",
+    "country": "LK",
+    "currency": "LKR",
+    "effectiveDate": "2026-07-03",
+    "editableIn": "AdminPanel > Tax Rules",
+    "confidenceLevels": ["verified", "reported", "estimate"],
+    "sources": [
+      { "id": "SRC-TARIFF-2025", "name": "Sri Lanka Customs National Imports Tariff Guide 2025, Ch.87", "url": "https://www.customs.gov.lk" },
+      { "id": "SRC-G2422-43", "name": "Gazette 2422/43 (31 Jan 2025) 50% CID surcharge order" },
+      { "id": "SRC-G2488-56", "name": "Gazette 2488/56 (May 2026) temporary 50% CID surcharge", "note": "number per pixamp.lk; effect confirmed by Newswire/News1st/Onlanka 16-17 May 2026" },
+      { "id": "SRC-EN-JAN25", "name": "EconomyNext 11 Jan 2025 excise per-cc revisions" },
+      { "id": "SRC-G2421-EV", "name": "Gazette 2421/42 EV excise (31 Jan 2025) + Gazette 2434/04 revision" },
+      { "id": "SRC-WI-2026", "name": "WealthyIslander tax tool, updated 29 May 2026" },
+      { "id": "SRC-DNS-2026", "name": "DNS Associates surcharge worksheet, updated 18 May 2026" }
+    ],
+    "verificationQueueRef": "docs/research/03-open-questions.md"
+  },
+
+  "rounding": { "duties": "rupee", "displayMinor": 2 },
+
+  "customsValue": {
+    "mode": "higherOfDeclaredOrAssessed",
+    "notes": "Customs may reassess declared CIF. User may enter an assessed-value override.",
+    "confidence": "verified"
+  },
+
+  "dutyComponents": [
+    {
+      "id": "cid",
+      "label": "Customs Import Duty (CID)",
+      "ratePct": 20.0,
+      "base": ["customsValue"],
+      "confidence": "reported",
+      "sourceRef": "SRC-TARIFF-2025",
+      "notes": "General rate ~20%; see D6 in discrepancy log for 2026 consolidation question."
+    },
+    {
+      "id": "surcharge_standing",
+      "label": "Surcharge on CID (standing)",
+      "ratePct": 50.0,
+      "base": ["cid"],
+      "effectiveFrom": "2025-02-01",
+      "effectiveTo": null,
+      "confidence": "reported",
+      "sourceRef": "SRC-G2422-43",
+      "notes": "Original order was 12 months from 2025-02-01; charged position in May 2026 remained an effective 30% duty per News1st/DNS. effectiveTo=null pending Q5."
+    },
+    {
+      "id": "surcharge_temp_2026",
+      "label": "Temporary surcharge (Gazette 2488/56)",
+      "ratePct": 50.0,
+      "base": ["cid", "surcharge_standing"],
+      "effectiveFrom": "2026-05-16",
+      "effectiveTo": "2026-08-15",
+      "conditions": { "lcOpenedAfter": "2026-05-15" },
+      "excludedVehicleClasses": ["motorcycle", "threeWheeler"],
+      "confidence": "reported",
+      "sourceRef": "SRC-G2488-56",
+      "notes": "Base disputed (D1): 45%-of-CIF reading (News1st/PiXAMP) modeled as default; set base:[\"cid\"] for the 40% reading. Exempt if LC opened on/before 2026-05-15; LC amendments after that date void the exemption."
+    }
+  ],
+
+  "pal": { "enabled": false, "ratePct": 0, "confidence": "reported", "notes": "Sampled Ch.87 lines show PAL 'Ex'. Q9." },
+  "cess": { "enabled": false, "ratePct": 0, "confidence": "reported", "notes": "Sampled Ch.87 lines show Cess 'Ex'. Q9." },
+
+  "exciseDuty": {
+    "act": "Excise (Special Provisions) Act No. 13 of 1989",
+    "selection": "higherOf",
+    "combustionOver3YearsMultiplier": { "value": 1.5, "confidence": "estimate", "notes": "Press reports 50-100% higher XID beyond 3 years; exact gazette rows pending Q1." },
+    "tables": {
+      "petrol": {
+        "unit": "cc",
+        "bands": [
+          { "min": 0, "max": 1000, "ratePerUnit": 2400, "perUnitFixed": null, "advaloremPct": null, "confidence": "estimate" },
+          { "min": 1000, "max": 1300, "ratePerUnit": 2750, "perUnitFixed": null, "advaloremPct": null, "confidence": "reported", "sourceRef": "SRC-EN-JAN25" },
+          { "min": 1300, "max": 1500, "ratePerUnit": 3450, "perUnitFixed": null, "advaloremPct": null, "confidence": "reported", "sourceRef": "SRC-EN-JAN25" },
+          { "min": 1500, "max": 1600, "ratePerUnit": 4800, "perUnitFixed": null, "advaloremPct": null, "confidence": "reported", "sourceRef": "SRC-EN-JAN25" },
+          { "min": 1600, "max": 1800, "ratePerUnit": 6300, "perUnitFixed": null, "advaloremPct": null, "confidence": "reported", "sourceRef": "SRC-EN-JAN25" },
+          { "min": 1800, "max": 2000, "ratePerUnit": 7700, "perUnitFixed": null, "advaloremPct": null, "confidence": "estimate" },
+          { "min": 2000, "max": 2500, "ratePerUnit": 8800, "perUnitFixed": null, "advaloremPct": null, "confidence": "estimate" },
+          { "min": 2500, "max": 3000, "ratePerUnit": 9900, "perUnitFixed": null, "advaloremPct": null, "confidence": "estimate" },
+          { "min": 3000, "max": 4000, "ratePerUnit": 11500, "perUnitFixed": null, "advaloremPct": null, "confidence": "estimate" },
+          { "min": 4000, "max": null, "ratePerUnit": 13000, "perUnitFixed": null, "advaloremPct": null, "confidence": "estimate" }
+        ]
+      },
+      "petrolHybrid": {
+        "unit": "cc",
+        "bands": [
+          { "min": 0, "max": 1000, "ratePerUnit": 2200, "perUnitFixed": null, "advaloremPct": null, "confidence": "estimate" },
+          { "min": 1000, "max": 1300, "ratePerUnit": 2500, "perUnitFixed": null, "advaloremPct": null, "confidence": "estimate" },
+          { "min": 1300, "max": 1500, "ratePerUnit": 3100, "perUnitFixed": null, "advaloremPct": null, "confidence": "estimate" },
+          { "min": 1500, "max": 1600, "ratePerUnit": 4300, "perUnitFixed": null, "advaloremPct": null, "confidence": "estimate" },
+          { "min": 1600, "max": 1800, "ratePerUnit": 5700, "perUnitFixed": null, "advaloremPct": null, "confidence": "estimate" },
+          { "min": 1800, "max": 2000, "ratePerUnit": 7000, "perUnitFixed": null, "advaloremPct": null, "confidence": "estimate" },
+          { "min": 2000, "max": 2500, "ratePerUnit": 8000, "perUnitFixed": null, "advaloremPct": null, "confidence": "estimate" },
+          { "min": 2500, "max": 3000, "ratePerUnit": 9000, "perUnitFixed": null, "advaloremPct": null, "confidence": "estimate" },
+          { "min": 3000, "max": null, "ratePerUnit": 10500, "perUnitFixed": null, "advaloremPct": null, "confidence": "estimate" }
+        ]
+      },
+      "diesel": {
+        "unit": "cc",
+        "notesGeneral": "Diesel typically ~20% above petrol per WealthyIslander; all bands pending Q1.",
+        "bands": [
+          { "min": 0, "max": 1500, "ratePerUnit": 4150, "perUnitFixed": null, "advaloremPct": null, "confidence": "estimate" },
+          { "min": 1500, "max": 1600, "ratePerUnit": 5800, "perUnitFixed": null, "advaloremPct": null, "confidence": "estimate" },
+          { "min": 1600, "max": 1800, "ratePerUnit": 7550, "perUnitFixed": null, "advaloremPct": null, "confidence": "estimate" },
+          { "min": 1800, "max": 2000, "ratePerUnit": 9250, "perUnitFixed": null, "advaloremPct": null, "confidence": "estimate" },
+          { "min": 2000, "max": 2500, "ratePerUnit": 10550, "perUnitFixed": null, "advaloremPct": null, "confidence": "estimate" },
+          { "min": 2500, "max": 3000, "ratePerUnit": 11900, "perUnitFixed": null, "advaloremPct": null, "confidence": "estimate" },
+          { "min": 3000, "max": null, "ratePerUnit": 13800, "perUnitFixed": null, "advaloremPct": null, "confidence": "estimate" }
+        ]
+      },
+      "dieselHybrid": {
+        "unit": "cc",
+        "bands": [
+          { "min": 0, "max": 2000, "ratePerUnit": 7800, "perUnitFixed": null, "advaloremPct": null, "confidence": "estimate" },
+          { "min": 2000, "max": 3000, "ratePerUnit": 10200, "perUnitFixed": null, "advaloremPct": null, "confidence": "estimate" },
+          { "min": 3000, "max": null, "ratePerUnit": 12400, "perUnitFixed": null, "advaloremPct": null, "confidence": "estimate" }
+        ]
+      },
+      "petrolPhev": {
+        "unit": "cc",
+        "bands": [
+          { "min": 0, "max": 1500, "ratePerUnit": 3300, "perUnitFixed": null, "advaloremPct": null, "confidence": "estimate" },
+          { "min": 1500, "max": 1800, "ratePerUnit": 5100, "perUnitFixed": null, "advaloremPct": null, "confidence": "estimate" },
+          { "min": 1800, "max": 2500, "ratePerUnit": 7400, "perUnitFixed": null, "advaloremPct": null, "confidence": "estimate" },
+          { "min": 2500, "max": null, "ratePerUnit": 9600, "perUnitFixed": null, "advaloremPct": null, "confidence": "estimate" }
+        ]
+      },
+      "dieselPhev": {
+        "unit": "cc",
+        "bands": [
+          { "min": 0, "max": 2000, "ratePerUnit": 8300, "perUnitFixed": null, "advaloremPct": null, "confidence": "estimate" },
+          { "min": 2000, "max": null, "ratePerUnit": 11000, "perUnitFixed": null, "advaloremPct": null, "confidence": "estimate" }
+        ]
+      },
+      "ev": {
+        "unit": "kW",
+        "ageTiers": true,
+        "notesGeneral": "EV rates revised by Gazette 2434/04 (2026), 'substantially higher than previous schedules'. Age tiers <=1y/<=2y/<=3y per DNS worksheet. ALL VALUES PENDING Q1 TRANSCRIPTION.",
+        "bands": [
+          { "min": 0, "max": 50, "ratePerUnitByAge": { "le1y": 12000, "le2y": 13500, "le3y": 15000 }, "confidence": "estimate" },
+          { "min": 50, "max": 100, "ratePerUnitByAge": { "le1y": 18000, "le2y": 20000, "le3y": 22000 }, "confidence": "estimate" },
+          { "min": 100, "max": 150, "ratePerUnitByAge": { "le1y": 26000, "le2y": 29000, "le3y": 32000 }, "confidence": "estimate" },
+          { "min": 150, "max": 200, "ratePerUnitByAge": { "le1y": 33000, "le2y": 37000, "le3y": 41000 }, "confidence": "estimate" },
+          { "min": 200, "max": null, "ratePerUnitByAge": { "le1y": 40000, "le2y": 45000, "le3y": 50000 }, "confidence": "estimate" }
+        ]
+      },
+      "esmart": {
+        "unit": "cc",
+        "ageTiers": true,
+        "notesGeneral": "Series-hybrid (e-POWER / e-SMART) category per DNS worksheet: <1y and >1y tiers.",
+        "bands": [
+          { "min": 0, "max": 1300, "ratePerUnitByAge": { "le1y": 2400, "gt1y": 2700 }, "confidence": "estimate" },
+          { "min": 1300, "max": 1800, "ratePerUnitByAge": { "le1y": 3600, "gt1y": 4100 }, "confidence": "estimate" },
+          { "min": 1800, "max": null, "ratePerUnitByAge": { "le1y": 6200, "gt1y": 7000 }, "confidence": "estimate" }
+        ]
+      }
+    }
+  },
+
+  "luxuryTaxRef": "config/luxuryThresholds.json",
+
+  "sscl": {
+    "label": "Social Security Contribution Levy",
+    "ratePct": 2.5,
+    "applyCifUplift": true,
+    "baseIncludes": ["customsValueUplifted", "cid", "surcharge_standing", "surcharge_temp_2026", "excise", "luxuryTax"],
+    "confidence": "reported",
+    "sourceRef": "SRC-WI-2026",
+    "notes": "Collected before VAT; SSCL joins the VAT base. Uplift application pending Q3."
+  },
+
+  "vat": {
+    "ratePct": 18.0,
+    "cifUpliftPct": 10.0,
+    "baseIncludes": ["customsValueUplifted", "cid", "surcharge_standing", "surcharge_temp_2026", "excise", "luxuryTax", "sscl"],
+    "confidence": "reported",
+    "notes": "Uplift per DNS formula and VAT Act import practice; luxury-in-base disputed by PiXAMP (D2/D3). Verify via CUSDEC, Q2."
+  }
+}
